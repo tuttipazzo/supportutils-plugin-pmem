@@ -190,76 +190,30 @@ def run_cmds(logfile, check=True, shell=False):
     for c in CMDS:
         log_cmd(logfile, c, check, shell)
 
-def mount_info(logfile):
+def FS_info(logfile):
     output = run_cmd(MOUNTS, check=True)
-#   COMMENT THIS OUT BEFORE PKGING
-    # print(output)
     pattern = '^/dev/pmem[0-9]+'
-    pattern2 = '^/dev/sd[a-z]+[0-9]+'
     # expected input
     # /dev/pmem12 /hana/pmem/nv13 xfs rw,relatime,attr2,dax,inode64,sunit=4096,swidth=4096,noquota 0 0
     cmdsout = ''
-# COMMENT THIS OUT BEFORE PKGING
-    # for l in output:
     # output = PMEM_TESTSTRING
+    # for l in output:
     for l in output.splitlines():
         cmd = []
-        match = re.search(pattern, l)
-        match2 = re.search(pattern2, l)
-        if match or match2:
-            pstr = l.split(' ')
-            fs = pstr[2]
-            dev = pstr[0]
-            if fs == 'xfs':
-                cmd.append('/usr/sbin/xfs_info')
-                cmd.append(dev)
-            elif fs == 'ext4':
-                cmd.append('/sbin/dumpe2fs')
-                cmd.append('-h')
-                cmd.append(dev)
-            else:
-                continue
-        if cmd:
-            cmdstr = ''
-            for cmdelm in cmd:
-                cmdstr = cmdstr + cmdelm + ' '
-            try:
-                s = run_cmd(cmd, check=True)
-                cmdsout = cmdsout + cmdstr + '\n' + s + '\n'
-            except subprocess.CalledProcessError as e:
-                # cmdstr = '{0} {1}: '.format(cmd[0], cmd[1])
-                # replace double '\n' for pp output
-                outstr = str((e.output).decode('utf-8')).replace('\n\n','\n\t')
-                cmdsout = cmdsout + cmdstr + '\n' + outstr
-                pass
-
-    if cmdsout:
-        log_data(logfile, FSI_HDR, cmdsout)
-
-def xfsio_pmem_info(logfile):
-    output = run_cmd(MOUNTS, check=True)
-#   COMMENT THIS OUT BEFORE PKGING
-    # print(output)
-    pattern = '^/dev/pmem[0-9]+'
-    # expected input
-    # /dev/pmem12 /hana/pmem/nv13 xfs rw,relatime,attr2,dax,inode64,sunit=4096,swidth=4096,noquota 0 0
-    cmdsout = ''
-# COMMENT THIS OUT BEFORE PKGING
-    output = PMEM_TESTSTRING
-    #    for l in output.splitlines():
-    for l in output:
-        cmd = []
+        cmd2 = []
         match = re.search(pattern, l)
         if match:
             pstr = l.split(' ')
             fs = pstr[2]
             dev = pstr[0]
             if fs == 'xfs':
-                cmd.append('/usr/sbin/xfs_io')
-                cmd.append('-c')
-                cmd.append('\'extsize\'')
+                cmd.append('/usr/sbin/xfs_info')
                 cmd.append(dev)
-            else:
+                cmd2.append('/usr/sbin/xfs_io')
+                cmd2.append('-c')
+                cmd2.append('\'extsize\'')
+                cmd2.append(dev)
+        else:
                 continue
         if cmd:
             cmdstr = ''
@@ -269,12 +223,22 @@ def xfsio_pmem_info(logfile):
                 s = run_cmd(cmd, check=True)
                 cmdsout = cmdsout + cmdstr + '\n' + s + '\n'
             except subprocess.CalledProcessError as e:
-                # cmdstr = '{0} {1}: '.format(cmd[0], cmd[1])
                 # replace double '\n' for pp output
                 outstr = str((e.output).decode('utf-8')).replace('\n\n','\n\t')
                 cmdsout = cmdsout + cmdstr + '\n' + outstr
                 pass
-
+        if cmd2:
+            cmdstr = ''
+            for cmdelm in cmd2:
+                cmdstr = cmdstr + cmdelm + ' '
+            try:
+                s = run_cmd(cmd2, check=True)
+                cmdsout = cmdsout + cmdstr + '\n' + s + '\n'
+            except subprocess.CalledProcessError as e:
+                # replace double '\n' for pp output
+                outstr = str((e.output).decode('utf-8')).replace('\n\n','\n\t')
+                cmdsout = cmdsout + cmdstr + '\n' + outstr
+                pass
     if cmdsout:
         log_data(logfile, FSI_HDR, cmdsout)
 
@@ -297,8 +261,8 @@ def do_supportconfig():
         # Run through cmd list
         run_cmds(logfile)
 
-        mount_info(logfile)
-        xfsio_pmem_info(logfile)
+        # Grab mount info for FS info
+        FS_info(logfile)
 
         # Display configuration.
         for p in CFG:
