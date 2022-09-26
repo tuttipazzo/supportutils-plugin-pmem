@@ -1,10 +1,4 @@
 #!/usr/bin/python3
-# Plugin for suse supportconfig support tool.
-#
-# This copyrighted material is made available to anyone wishing to use,
-# modify, copy, or redistribute it subject to the terms and conditions of
-# version 2 of the GNU General Public License.
-#
 # See the LICENSE file in the source distribution for further information.
 import mimetypes
 import os
@@ -244,7 +238,7 @@ def FS_info(logfile):
 
 def do_supportconfig():
     # Get our logfile name
-    logfilename = os.path.join(os.environ['LOG'], 'pmem.txt')
+    logfilename = os.path.join(os.environ['LOG'], 'plugin-pmem.txt')
     # Start to write some stuff out.
     with open(logfilename, 'w', encoding='utf-8') as logfile:
         if not log_cmd(logfile, ["rpm", "-q", PKGS[0]]):

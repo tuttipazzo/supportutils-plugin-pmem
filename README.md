@@ -7,7 +7,7 @@ To test:
 
     sudo LOG=/tmp python3 ./pmem.py
 
-The cmd above will output pmem log data to /tmp/pmem.txt.
+The cmd above will output pmem log data to /tmp/plugin-pmem.txt.
 
 Information about Intel Optane persistent memory modules (pmem):
 

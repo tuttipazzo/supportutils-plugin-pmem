@@ -18,19 +18,17 @@
 Name:           supportutils-plugin-pmem
 Version:        0.0.1
 Release:    	1.1.0
-Source: 		supportutils-plugin-pmem-%{version}.tar.bz2 
+Source:         supportutils-plugin-pmem-%{version}.tar.bz2 
 Summary:        Supportconfig Plugin for pmem
 License:        GPL-2.0-only
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
-Requires:       supportconfig-plugin-resource
-Requires:       supportconfig-plugin-tag
-BuildRequires:  %{python_module mimetypes}
-BuildRequires:  %{python_module os}
-BuildRequires:  %{python_module subproces}
-BuildRequires:  %{python_module sys}
-BuildRequires:  %{python_module io}
-BuildRequires:  %{python_module pathlib}
+Requires:       python3
+Requires:       python3-os
+Requires:       python3-subproces
+Requires:       python3-sys
+Requires:       python3-io
+Requires:       python3-pathlib
 
 %description
 Extends supportconfig functionality to include system information for
@@ -43,13 +41,13 @@ ndctl (NVDIMM) & ipmctl (Intel pmem). The plugin also saves related logs.
 %install
 install -d $RPM_BUILD_ROOT/usr/lib/supportconfig/plugins
 install -d $RPM_BUILD_ROOT/sbin
-install -m 0544  ha_sap $RPM_BUILD_ROOT/usr/lib/supportconfig/plugins
+install -m 0544  pmem.py $RPM_BUILD_ROOT/usr/lib/supportconfig/plugins/pmem
 
 %files
 %defattr(-,root,root)
 /usr/lib/supportconfig
 /usr/lib/supportconfig/plugins
-/usr/lib/supportconfig/plugins/pmem.py
+/usr/lib/supportconfig/plugins/pmem
 
 %clean
 rm -rf $RPM_BUILD_ROOT
