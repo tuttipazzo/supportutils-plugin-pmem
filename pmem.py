@@ -4,7 +4,6 @@ import mimetypes
 import os
 import subprocess
 import sys
-from io import IOBase
 from pathlib import Path
 import re
 
@@ -241,10 +240,13 @@ def do_supportconfig():
     logfilename = os.path.join(os.environ['LOG'], 'plugin-pmem.txt')
     # Start to write some stuff out.
     with open(logfilename, 'w', encoding='utf-8') as logfile:
-        if not log_cmd(logfile, ["rpm", "-q", PKGS[0]]):
-            logfile.close()
-            os.remove(logfilename)
-            sys.exit(0)
+        # Pazzo: 10/3/23
+        # Commented out due to no output would create user confusion.
+        #
+        #if not log_cmd(logfile, ["rpm", "-q", PKGS[0]]):
+        #    logfile.close()
+        #    os.remove(logfilename)
+        #    sys.exit(0)
 
         if DEBUG:
             log_env(logfile)
